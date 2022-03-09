@@ -55,7 +55,7 @@ The progress bar will always be the full width of the window.
 Example Code:
 ```python
 asw = AdvancedStatusWindow()
-asw.add_attribute('Example', 'ProgressBar', 50)
+asw.add_attribute('Example', 'ProgressBar', False, 50)
 for i in range(50):
   asw.update_attribute('Example', i)
 asw.close_window()
@@ -70,7 +70,7 @@ Example: [=========>          ] 50 %
 Example Code:
 ```python
 asw = AdvancedStatusWindow()
-asw.add_attribute('Example', 'Percentage', 50)
+asw.add_attribute('Example', 'Percentage', False, 50)
 for i in range(50):
   asw.update_attribute('Example', i)
 asw.close_window()
@@ -85,7 +85,7 @@ Example: 50 %
 Example Code:
 ```python
 asw = AdvancedStatusWindow()
-asw.add_attribute('Example', 'Division', 50)
+asw.add_attribute('Example', 'Division', False, 50)
 for i in range(50):
   asw.update_attribute('Example', i)
 asw.close_window()
@@ -132,8 +132,8 @@ Example: Even
 Example Code:
 ```python
 asw = AdvancedStatusWindow()
-asw.add_attribute('Percentage Example', 'Percentage', 50)
-asw.add_attribute('Division Example', 'Division', 100)
+asw.add_attribute('Percentage Example', 'Percentage', False, 50)
+asw.add_attribute('Division Example', 'Division', False, 100)
 for i in range(50):
   asw.update_many({'Percentage Example': i, 'Division Example': i*2})
 asw.close_window()
@@ -143,4 +143,24 @@ Output of Example:
 Percentage Example: 50 %
 Division Example: 50/100
 ```
+
+#### Logging
+Attributes that you want can be logged into a file.
+
+Example Code:
+```python
+asw = AdvancedStatusWindow('/home/myUsername/Desktop/myCoolLog.log')
+asw.add_attribute('Example', 'Percentage', True, 50)
+for i in range(50):
+  asw.update_attribute('Example', i)
+asw.close_window()
+```
+Example Log File:
+```
+Example: 0
+Example: 1
+Example: 2
+...
+```
+
 
