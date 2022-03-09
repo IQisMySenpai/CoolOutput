@@ -1,4 +1,4 @@
-import sys, os
+import os
 import curses
 
 
@@ -9,16 +9,16 @@ class ProgressBar:
     maxValue = 100
     barName = 'Process'
 
-    def __init__(self, name: str = 'Process', max: int = 100, width: int = -1):
+    def __init__(self, name: str = 'Process', max_val: int = 100, width: int = -1):
         """
         Initializes the Progressbar
         :param name: str, default: 'Process'. Name that should be displayed with the processbar.
-        :param max: int, default: 100. The amount where the processbar should be at 100%.
+        :param max_val: int, default: 100. The amount where the processbar should be at 100%.
         :param width: int, default: -1. Width of the processbar. Set to -1 for full terminal width, else it has to be at least 1
         :return:
         """
         self.barName = name
-        self.maxValue = max
+        self.maxValue = max_val
 
         if width > 0:
             self.barWidth = width
@@ -65,24 +65,29 @@ class AdvancedStatusWindow:
     rows = 0
     columns = 0
     window = None
+    logfile = None
 
-    def __init__(self):
+    def __init__(self, log: str = '/var/log/coolOutput.log'):
         """
-        Initializes the Advanced Status Window. Also opens the window.
+        Initializes the Advanced Status Window. Also opens the window. Add a log path if you want to log the data.
+        :param log: str, default: '/var/log/coolOutput.log'. Path to the logfile.
         :return:
         """
+        self.logfile = open(log, "a")
+
         self.window = curses.initscr()
         curses.curs_set(0)
         curses.start_color()
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self.rows, self.columns = self.window.getmaxyx()
 
-    def add_attribute(self, name: str = 'Process', type_of: str = 'Counter', max_value: int = 0):
+    def add_attribute(self, name: str = 'Process', type_of: str = 'Counter', islogged: bool = False, max_value: int = 0):
         """
         Create a new attribute you want to track
         :param name: str, default: 'Process'. Name of the new attribute. Has to be unique
         :param type_of: str, default: 'Counter'. Style of the attribute output. Possibilities are 'ProgressBar',
         'Percentage', 'Division', 'Counter', 'Status'
+        :param islogged: bool, default: False. Set to true if you want to log this attribute.
         :param max_value: int, default: 0. Highest expected value. Only needed for 'ProgressBar', 'Percentage',
         'Division'
         :return:
@@ -94,17 +99,24 @@ class AdvancedStatusWindow:
             if type_of == 'ProgressBar':
                 self.attributes[name] = {'type': type_of,
                                          'value': 0,
+                                         'islogged': islogged,
                                          'maxValue': max_value,
                                          'barWidth': self.columns - (len(name) + 10)}
             else:
                 self.attributes[name] = {'type': type_of,
                                          'value': 0,
+                                         'islogged': islogged,
                                          'maxValue': max_value}
         elif type_of in self.types_without_max:
             self.attributes[name] = {'type': type_of,
+                                     'islogged': islogged,
                                      'value': 0}
         else:
             raise Exception(f'{type_of} is not a valid type of attribute')
+
+    def add_to_log (self, name: str = 'Process', value=0):
+        self.logfile.write(f'{name}: {value}')
+
 
     def update_attribute(self, name: str = 'Process', value=0):
         """
@@ -117,6 +129,8 @@ class AdvancedStatusWindow:
             raise Exception(f'{name} isn\'t a attribute')
 
         self.attributes[name]['value'] = value
+        if self.attributes[name]['islogged']:
+            self.add_to_log(name, value)
         self.update_window()
 
     def update_many(self, attr: dict = None):
@@ -130,6 +144,8 @@ class AdvancedStatusWindow:
         for name in attr:
             if name not in self.attributes:
                 raise Exception(f'{name} isn\'t a attribute')
+            if self.attributes[name]['islogged']:
+                self.add_to_log(name, attr[name])
             self.attributes[name]['value'] = attr[name]
         self.update_window()
 
@@ -161,6 +177,7 @@ class AdvancedStatusWindow:
         Closes the window.
         :return:
         """
+        self.logfile.close()
         self.reset_window()
         curses.endwin()
 
