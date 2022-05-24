@@ -1,5 +1,6 @@
 import os
 import curses
+import math
 
 
 class ProgressBar:
@@ -67,7 +68,7 @@ class AdvancedStatusWindow:
     window = None
     logfile = None
     header = 'My Advanced Status Window'
-    half_header_len = len(header) / 2
+    half_header_len = math.floor(len(header) / 2)
 
     def __init__(self, header, log: str = '/var/log/coolOutput.log'):
         """
@@ -78,7 +79,7 @@ class AdvancedStatusWindow:
         """
         self.logfile = open(log, "a")
         self.header = header
-        self.half_header_len = len(header) / 2
+        self.half_header_len = math.floor(len(header) / 2)
 
         self.window = curses.initscr()
         curses.curs_set(0)
@@ -163,7 +164,7 @@ class AdvancedStatusWindow:
         self.rows, self.columns = self.window.getmaxyx()
         self.window.clear()
         i = 4
-        x = (self.columns / 2) - self.half_header_len
+        x = math.floor(self.columns / 2) - self.half_header_len
         self.window.addstr(2, x, self.header, curses.color_pair(2) | curses.A_BOLD)
         for name in self.attributes:
             if i > self.rows:
