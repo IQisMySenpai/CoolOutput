@@ -18,7 +18,7 @@ Wanted a bit cooler output in my python projects. For the small projects I creat
 
 ## Examples
 
-Some examples on I plan on using the code.
+Some examples on how I plan on using the code.
 
 ### Progress Bar Class
 
